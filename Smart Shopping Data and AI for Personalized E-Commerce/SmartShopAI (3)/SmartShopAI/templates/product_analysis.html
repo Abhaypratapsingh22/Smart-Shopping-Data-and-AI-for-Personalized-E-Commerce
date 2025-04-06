@@ -1,0 +1,336 @@
+E-Commerce AI Dashboard - Product Analysis
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce AI Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <script src="../static/js/main.js"></script>
+    
+</head>
+<h1>Product Analysis</h1>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Product Filter</h5>
+                <div class="form-group">
+                    <label for="category-select">Category:</label>
+                    <select id="category-select" class="form-control">
+                        <option value="All">All Categories</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Clothing">Clothing</option>
+                        <option value="Home & Kitchen">Home & Kitchen</option>
+                        <option value="Beauty">Beauty</option>
+                        <option value="Sports">Sports</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="sort-select">Sort By:</label>
+                    <select id="sort-select" class="form-control">
+                        <option value="Price (Low to High)">Price (Low to High)</option>
+                        <option value="Price (High to Low)">Price (High to Low)</option>
+                        <option value="Rating (High to Low)">Rating (High to Low)</option>
+                    </select>
+                </div>
+                <button id="filter-products-btn" class="btn btn-primary">Apply Filter</button>
+            </div>
+        </div>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Category Distribution</h5>
+                <button id="category-distribution-btn" class="btn btn-primary">Generate Chart</button>
+                <div id="category-results" class="mt-3" style="display: none;">
+                    <div class="chart-container mt-3">
+                        <img src="../static/images/category_distribution.png" alt="Category Distribution" id="category-chart" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Product List</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Category</th>
+                                <th>Subcategory</th>
+                                <th>Price</th>
+                                <th>Rating</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-table">
+                            <!-- Products will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="products-loading" class="text-center my-3">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading products...</p>
+                </div>
+                <div id="no-products" class="alert alert-info" style="display: none;">
+                    No products found matching the selected criteria.
+                </div>
+            </div>
+        </div>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Product Similarity</h5>
+                <p class="card-text">Calculate similarity between products based on features</p>
+                <button id="calculate-similarity-btn" class="btn btn-primary">Calculate Similarity</button>
+                <div id="similarity-results" class="mt-3" style="display: none;">
+                    <div class="chart-container mt-3">
+                        <img src="../static/images/similarity_heatmap.png" alt="Product Similarity" id="similarity-heatmap" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Product Details Modal -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">Product Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl class="row">
+                            <dt class="col-sm-4">Product ID</dt>
+                            <dd class="col-sm-8" id="modal-product-id">-</dd>
+                            
+                            <dt class="col-sm-4">Category</dt>
+                            <dd class="col-sm-8" id="modal-category">-</dd>
+                            
+                            <dt class="col-sm-4">Subcategory</dt>
+                            <dd class="col-sm-8" id="modal-subcategory">-</dd>
+                            
+                            <dt class="col-sm-4">Brand</dt>
+                            <dd class="col-sm-8" id="modal-brand">-</dd>
+                            
+                            <dt class="col-sm-4">Price</dt>
+                            <dd class="col-sm-8" id="modal-price">-</dd>
+                            
+                            <dt class="col-sm-4">Rating</dt>
+                            <dd class="col-sm-8" id="modal-rating">-</dd>
+                            
+                            <dt class="col-sm-4">Sentiment</dt>
+                            <dd class="col-sm-8" id="modal-sentiment">-</dd>
+                            
+                            <dt class="col-sm-4">Season</dt>
+                            <dd class="col-sm-8" id="modal-season">-</dd>
+                            
+                            <dt class="col-sm-4">Geography</dt>
+                            <dd class="col-sm-8" id="modal-geography">-</dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Similar Products</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Category</th>
+                                        <th>Price</th>
+                                        <th>Rating</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="similar-products">
+                                    <!-- Similar products will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Apply filter
+    document.getElementById('filter-products-btn').addEventListener('click', loadProducts);
+    
+    // Load products on page load
+    loadProducts();
+    
+    // Function to load products
+    function loadProducts() {
+        const category = document.getElementById('category-select').value;
+        const sortBy = document.getElementById('sort-select').value;
+        
+        document.getElementById('products-loading').style.display = 'block';
+        document.getElementById('no-products').style.display = 'none';
+        
+        // Simulate API call
+        setTimeout(function() {
+            document.getElementById('products-loading').style.display = 'none';
+            
+            // Mock data for demonstration
+            let productsData = [
+                {product_id: 'P1001', category: 'Electronics', subcategory: 'Smartphones', price: 699.99, product_rating: 4.8},
+                {product_id: 'P1002', category: 'Clothing', subcategory: 'Women\'s Dresses', price: 89.99, product_rating: 4.5},
+                {product_id: 'P1003', category: 'Home & Kitchen', subcategory: 'Cookware', price: 129.99, product_rating: 4.7},
+                {product_id: 'P1004', category: 'Beauty', subcategory: 'Skincare', price: 49.99, product_rating: 4.6},
+                {product_id: 'P1005', category: 'Sports', subcategory: 'Fitness Equipment', price: 199.99, product_rating: 4.4}
+            ];
+            
+            // Apply category filter
+            if (category !== 'All') {
+                productsData = productsData.filter(product => product.category === category);
+            }
+            
+            // Apply sorting
+            if (sortBy === 'Price (Low to High)') {
+                productsData.sort((a, b) => a.price - b.price);
+            } else if (sortBy === 'Price (High to Low)') {
+                productsData.sort((a, b) => b.price - a.price);
+            } else if (sortBy === 'Rating (High to Low)') {
+                productsData.sort((a, b) => b.product_rating - a.product_rating);
+            }
+            
+            const productsTable = document.getElementById('products-table');
+            productsTable.innerHTML = '';
+            
+            if (productsData.length === 0) {
+                document.getElementById('no-products').style.display = 'block';
+                return;
+            }
+            
+            // Populate products table
+            productsData.forEach(product => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.product_id}</td>
+                    <td>${product.category}</td>
+                    <td>${product.subcategory}</td>
+                    <td>${formatCurrency(product.price)}</td>
+                    <td>${product.product_rating}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary view-product" data-product-id="${product.product_id}">
+                            View
+                        </button>
+                    </td>
+                `;
+                productsTable.appendChild(row);
+            });
+            
+            // Add event listeners to the view buttons
+            document.querySelectorAll('.view-product').forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-product-id');
+                    showProductDetails(productId);
+                });
+            });
+        }, 800);
+    }
+    
+    // Show product details in modal
+    function showProductDetails(productId) {
+        // Simulate API call
+        setTimeout(function() {
+            // Mock data for demonstration
+            const productData = {
+                product_id: productId,
+                category: 'Electronics',
+                subcategory: 'Smartphones',
+                brand: 'TechBrand',
+                price: 699.99,
+                product_rating: 4.8,
+                sentiment_score: 0.85,
+                season: 'All Year',
+                geographical_location: 'Global',
+                similar_products: [
+                    {product_id: 'P1006', category: 'Electronics', subcategory: 'Smartphones', price: 649.99, product_rating: 4.7},
+                    {product_id: 'P1007', category: 'Electronics', subcategory: 'Smartphones', price: 799.99, product_rating: 4.9},
+                    {product_id: 'P1008', category: 'Electronics', subcategory: 'Tablets', price: 499.99, product_rating: 4.5}
+                ]
+            };
+            
+            // Populate modal
+            document.getElementById('modal-product-id').textContent = productData.product_id;
+            document.getElementById('modal-category').textContent = productData.category;
+            document.getElementById('modal-subcategory').textContent = productData.subcategory;
+            document.getElementById('modal-brand').textContent = productData.brand;
+            document.getElementById('modal-price').textContent = formatCurrency(productData.price);
+            document.getElementById('modal-rating').textContent = productData.product_rating;
+            document.getElementById('modal-sentiment').textContent = (productData.sentiment_score * 100).toFixed(1) + '% Positive';
+            document.getElementById('modal-season').textContent = productData.season;
+            document.getElementById('modal-geography').textContent = productData.geographical_location;
+            
+            // Populate similar products
+            const similarProductsTable = document.getElementById('similar-products');
+            similarProductsTable.innerHTML = '';
+            
+            productData.similar_products.forEach(product => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.product_id}</td>
+                    <td>${product.category}</td>
+                    <td>${formatCurrency(product.price)}</td>
+                    <td>${product.product_rating}</td>
+                `;
+                similarProductsTable.appendChild(row);
+            });
+            
+            // Show modal
+            $('#productModal').modal('show');
+        }, 500);
+    }
+    
+    // Category Distribution
+    document.getElementById('category-distribution-btn').addEventListener('click', function() {
+        const button = this;
+        button.disabled = true;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
+        
+        // Simulate API call
+        setTimeout(function() {
+            button.disabled = false;
+            button.textContent = 'Generate Chart';
+            
+            // Show results
+            document.getElementById('category-results').style.display = 'block';
+        }, 1000);
+    });
+    
+    // Calculate Similarity
+    document.getElementById('calculate-similarity-btn').addEventListener('click', function() {
+        const button = this;
+        button.disabled = true;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Calculating...';
+        
+        // Simulate API call
+        setTimeout(function() {
+            button.disabled = false;
+            button.textContent = 'Calculate Similarity';
+            
+            // Show results
+            document.getElementById('similarity-results').style.display = 'block';
+        }, 1500);
+    });
+});
+</script>

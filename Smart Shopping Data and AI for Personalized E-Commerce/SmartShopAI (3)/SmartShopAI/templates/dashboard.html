@@ -1,0 +1,172 @@
+E-Commerce AI Dashboard - Dashboard
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <script src="../static/js/main.js"></script>
+    
+    
+</head>
+<h1>Dashboard</h1>
+
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card stats-card mb-4">
+            <div class="card-body">
+                <h5 class="stats-title">Total Customers</h5>
+                <p class="stats-value" id="total-customers">{{ total_customers }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card mb-4">
+            <div class="card-body">
+                <h5 class="stats-title">Total Products</h5>
+                <p class="stats-value" id="total-products">{{ total_products }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card mb-4">
+            <div class="card-body">
+                <h5 class="stats-title">Avg Order Value</h5>
+                <p class="stats-value" id="avg-order-value">${{ avg_order_value }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card mb-4">
+            <div class="card-body">
+                <h5 class="stats-title">Avg Product Rating</h5>
+                <p class="stats-value" id="avg-product-rating">{{ avg_product_rating }}/5</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+ <div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Customer Segments</h5>
+                <div class="chart-container">
+                    <img src="../static/images/segments_chart.png" alt="Customer Segments" id="segments-chart" class="img-fluid"> 
+                    <img src="{{ segments_chart }}" alt="Customer Segments" id="segments-chart" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>  
+   
+    
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Product Categories</h5>
+                <div class="chart-container">
+                    <img src="{{ url_for('app_flask', filename='images/segments_chart.png') }}" alt="Product Categories" id="categories-chart" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Customer Age Distribution</h5>
+                <div class="chart-container">
+                    <img src="../static/images/age_chart.png" alt="Age Distribution" id="age-chart" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Product Price Distribution</h5>
+                <div class="chart-container">
+                    <img src="/static/images/price_chart.png" alt="Price Distribution" id="price-chart" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Trending Products</h5>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Category</th>
+                        <th>Subcategory</th>
+                        <th>Price</th>
+                        <th>Rating</th>
+                        <th>Trending Score</th>
+                    </tr>
+                </thead>
+                <tbody id="trending-products">
+                    <!-- Trending products will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Example data for testing (would normally come from a database)
+    const dashboardData = {
+        total_customers: 1500,
+        total_products: 750,
+        avg_order_value: 85.75,
+        avg_product_rating: 4.2,
+        trending_products: [
+            {product_id: 'P1001', category: 'Electronics', subcategory: 'Smartphones', price: 699.99, product_rating: 4.8, trending_score: 0.92},
+            {product_id: 'P1002', category: 'Clothing', subcategory: 'Women\'s Dresses', price: 89.99, product_rating: 4.5, trending_score: 0.88},
+            {product_id: 'P1003', category: 'Home & Kitchen', subcategory: 'Cookware', price: 129.99, product_rating: 4.7, trending_score: 0.85},
+            {product_id: 'P1004', category: 'Beauty', subcategory: 'Skincare', price: 49.99, product_rating: 4.6, trending_score: 0.82},
+            {product_id: 'P1005', category: 'Sports', subcategory: 'Fitness Equipment', price: 199.99, product_rating: 4.4, trending_score: 0.79}
+        ]
+    };
+    
+    // Update dashboard statistics
+    document.getElementById('total-customers').textContent = dashboardData.total_customers;
+    document.getElementById('total-products').textContent = dashboardData.total_products;
+    document.getElementById('avg-order-value').textContent = '$' + dashboardData.avg_order_value;
+    document.getElementById('avg-product-rating').textContent = dashboardData.avg_product_rating + '/5';
+    
+    // Populate trending products table
+    const trendingProductsTable = document.getElementById('trending-products');
+    dashboardData.trending_products.forEach(product => {
+        const row = document.createElement('tr');
+        
+        row.innerHTML = `
+            <td>${product.product_id}</td>
+            <td>${product.category}</td>
+            <td>${product.subcategory}</td>
+            <td>${formatCurrency(product.price)}</td>
+            <td>${product.product_rating}</td>
+            <td>
+                <div class="progress">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: ${product.trending_score * 100}%" 
+                        aria-valuenow="${product.trending_score * 100}" aria-valuemin="0" aria-valuemax="100">
+                        ${Math.round(product.trending_score * 100)}%
+                    </div>
+                </div>
+            </td>
+        `;
+        
+        trendingProductsTable.appendChild(row);
+    });
+});
+</script>

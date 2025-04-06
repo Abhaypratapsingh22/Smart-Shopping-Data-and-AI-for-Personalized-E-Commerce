@@ -1,0 +1,184 @@
+/**
+ * Custom styles for the E-Commerce AI Dashboard
+ */
+
+/* Main layout */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+  }
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.container {
+    flex-grow: 1;
+}
+
+footer {
+    margin-top: auto;
+}
+
+/* Card styles */
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-title {
+    font-weight: 600;
+    color: #333;
+}
+
+/* Dashboard stats */
+.stats-card {
+    border-left: 4px solid #007bff;
+    background-color: #f8f9fa;
+}
+
+.stats-icon {
+    font-size: 2rem;
+    color: #007bff;
+}
+
+.stats-title {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #6c757d;
+}
+
+.stats-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+/* Charts */
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+.chart-container img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Tables */
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.075);
+}
+
+/* Recommendation confidence bars */
+.confidence-bar {
+    height: 8px;
+    border-radius: 4px;
+    background-color: #e9ecef;
+    margin-top: 5px;
+}
+
+.confidence-value {
+    height: 100%;
+    border-radius: 4px;
+    background-color: #28a745;
+}
+
+/* Customer profile */
+.customer-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #007bff;
+    color: white;
+    font-size: 2.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 15px;
+}
+
+.customer-details dt {
+    font-weight: 600;
+    color: #495057;
+}
+
+/* Agent interaction */
+.chat-container {
+    height: 400px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+}
+
+.chat-message {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+}
+
+.user-message {
+    background-color: #007bff;
+    color: white;
+    margin-left: 2rem;
+}
+
+.agent-message {
+    background-color: #f1f1f1;
+    margin-right: 2rem;
+}
+
+/* Loading indicators */
+.spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* Navigation active state */
+.nav-link.active {
+    font-weight: bold;
+    background-color: rgba(0, 123, 255, 0.1);
+    border-radius: 0.25rem;
+}
+
+/* Form controls */
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .jumbotron h1 {
+        font-size: 2.5rem;
+    }
+    
+    .stats-value {
+        font-size: 1.5rem;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+}

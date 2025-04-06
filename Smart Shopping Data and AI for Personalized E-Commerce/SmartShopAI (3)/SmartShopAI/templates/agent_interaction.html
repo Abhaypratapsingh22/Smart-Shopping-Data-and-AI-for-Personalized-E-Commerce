@@ -1,0 +1,213 @@
+E-Commerce AI Dashboard - Agent Interaction
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}E-Commerce AI Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <script src="../static/js/main.js"></script>
+    
+</head>
+<h1>AI Agent Interaction</h1>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Ask the AI Agents</h5>
+                <p class="card-text">Interact directly with the AI agents to get insights and recommendations</p>
+                
+                <div class="chat-container mb-3" id="chat-container">
+                    <div class="chat-message agent-message">
+                        <p>Hello! I'm your AI assistant for e-commerce analytics. How can I help you today?</p>
+                    </div>
+                    <!-- Chat messages will be appended here -->
+                </div>
+                
+                <div class="form-group">
+                    <label for="query-input">Your Query:</label>
+                    <textarea id="query-input" class="form-control" rows="3" placeholder="Type your question here..."></textarea>
+                </div>
+                
+                <button id="send-query-btn" class="btn btn-primary">Send Query</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Example Queries</h5>
+                <ul class="list-group">
+                    <li class="list-group-item example-query">What are the top trending products this week?</li>
+                    <li class="list-group-item example-query">Which customer segments have the highest average order value?</li>
+                    <li class="list-group-item example-query">What products should we recommend to customers in the 'High-Value Buyer' segment?</li>
+                    <li class="list-group-item example-query">How do product categories perform across different customer segments?</li>
+                    <li class="list-group-item example-query">What are the purchase patterns for customers aged 25-35?</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Agent Capabilities</h5>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6 class="card-title">Customer Agent</h6>
+                                <p class="card-text">Analyzes customer profiles, segments, and behaviors</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6 class="card-title">Product Agent</h6>
+                                <p class="card-text">Analyzes product details, relationships, and trends</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6 class="card-title">Recommendation Agent</h6>
+                                <p class="card-text">Generates personalized product recommendations</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chatContainer = document.getElementById('chat-container');
+    const queryInput = document.getElementById('query-input');
+    const sendQueryBtn = document.getElementById('send-query-btn');
+    
+    // Send query
+    function sendQuery() {
+        const query = queryInput.value.trim();
+        
+        if (query === '') {
+            return;
+        }
+        
+        // Add user message to chat
+        const userMessageDiv = document.createElement('div');
+        userMessageDiv.className = 'chat-message user-message';
+        userMessageDiv.innerHTML = `<p>${query}</p>`;
+        chatContainer.appendChild(userMessageDiv);
+        
+        // Clear input
+        queryInput.value = '';
+        
+        // Scroll to bottom of chat
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        
+        // Disable button while processing
+        sendQueryBtn.disabled = true;
+        sendQueryBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+        
+        // Simulate API call
+        setTimeout(function() {
+            // Re-enable button
+            sendQueryBtn.disabled = false;
+            sendQueryBtn.textContent = 'Send Query';
+            
+            // Generate response based on query (simple keyword matching for demo)
+            let response = '';
+            
+            if (query.toLowerCase().includes('trending')) {
+                response = `
+                    <p>Based on our analysis, these are the top 5 trending products this week:</p>
+                    <ol>
+                        <li>TechBrand Smartphone Pro (Electronics) - 92% trending score</li>
+                        <li>Fashion Boutique Summer Dress (Clothing) - 88% trending score</li>
+                        <li>KitchenPro Cookware Set (Home & Kitchen) - 85% trending score</li>
+                        <li>GlowSkin Facial Serum (Beauty) - 82% trending score</li>
+                        <li>FitLife Home Gym (Sports) - 79% trending score</li>
+                    </ol>
+                    <p>Would you like more detailed information about any of these products?</p>
+                `;
+            } else if (query.toLowerCase().includes('segment')) {
+                response = `
+                    <p>I've analyzed the customer segments by average order value:</p>
+                    <ul>
+                        <li>High-Value Buyers: $98.75 average order value</li>
+                        <li>Deal Seekers: $65.40 average order value</li>
+                        <li>Casual Browsers: $42.30 average order value</li>
+                        <li>New Customers: $38.25 average order value</li>
+                    </ul>
+                    <p>The High-Value Buyers segment represents 28% of our customer base but contributes 45% of total revenue.</p>
+                `;
+            } else if (query.toLowerCase().includes('recommend')) {
+                response = `
+                    <p>For customers in the 'High-Value Buyer' segment, I recommend focusing on these product categories:</p>
+                    <ul>
+                        <li>Premium Electronics (smartphones, laptops, headphones)</li>
+                        <li>Designer Clothing (especially seasonal new arrivals)</li>
+                        <li>Premium Beauty Products (skincare sets, fragrance)</li>
+                    </ul>
+                    <p>These customers typically respond well to exclusive offers, early access to new products, and premium service options.</p>
+                `;
+            } else if (query.toLowerCase().includes('pattern') || query.toLowerCase().includes('25-35')) {
+                response = `
+                    <p>Customers aged 25-35 show these distinct purchasing patterns:</p>
+                    <ul>
+                        <li>Highest activity on mobile devices (72% of purchases)</li>
+                        <li>Most active shopping times: 8-10 PM weekdays, 2-5 PM weekends</li>
+                        <li>Top categories: Electronics, Clothing, Beauty</li>
+                        <li>Price sensitivity: Medium, with high response to limited-time offers</li>
+                        <li>Average items per order: 2.4</li>
+                    </ul>
+                    <p>They also show higher engagement with social media promotions compared to other age groups.</p>
+                `;
+            } else {
+                response = `
+                    <p>I'm happy to help with your query about "${query}".</p>
+                    <p>As an AI assistant, I can provide insights on customer behavior, product trends, and personalized recommendations based on our e-commerce data.</p>
+                    <p>Could you provide more specific details about what you'd like to know? You can ask about customer segments, product categories, purchasing patterns, or recommendation strategies.</p>
+                `;
+            }
+            
+            // Add agent response to chat
+            const agentMessageDiv = document.createElement('div');
+            agentMessageDiv.className = 'chat-message agent-message';
+            agentMessageDiv.innerHTML = response;
+            chatContainer.appendChild(agentMessageDiv);
+            
+            // Scroll to bottom of chat
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }, 1000);
+    }
+    
+    // Send button click
+    sendQueryBtn.addEventListener('click', sendQuery);
+    
+    // Enter key press
+    queryInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendQuery();
+        }
+    });
+    
+    // Example query click
+    document.querySelectorAll('.example-query').forEach(example => {
+        example.addEventListener('click', function() {
+            queryInput.value = this.textContent;
+            queryInput.focus();
+        });
+    });
+});
+</script>

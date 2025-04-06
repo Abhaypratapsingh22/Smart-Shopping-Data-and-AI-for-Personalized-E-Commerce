@@ -1,0 +1,243 @@
+E-Commerce AI Dashboard - Customer Analysis
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}E-Commerce AI Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <script src="../static/js/main.js"></script>
+</head>
+<h1>Customer Analysis</h1>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Customer Segmentation</h5>
+                <p class="card-text">Run clustering algorithm to segment customers based on their attributes</p>
+                <button id="run-segmentation-btn" class="btn btn-primary">Run Segmentation</button>
+                <div id="segmentation-results" class="mt-3" style="display: none;">
+                    <div class="chart-container mt-3">
+                        <img src="../static/images/clusters_viz.png" alt="Customer Clusters" id="cluster-viz" class="img-fluid">
+                    </div>
+                    <h6 class="mt-3">Cluster Profiles</h6>
+                    <div id="cluster-profiles"></div>
+                </div>
+            </div>
+        </div>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Browsing Trends</h5>
+                <p class="card-text">Analyze browsing trends across customer segments</p>
+                <button id="browse-trends-btn" class="btn btn-primary">Analyze Trends</button>
+                <div id="browsing-results" class="mt-3" style="display: none;">
+                    <div class="chart-container mt-3">
+                        <img src="../static/images/browsing_trends.png" alt="Browsing Trends" id="browsing-chart" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Customer Profile</h5>
+                <p class="card-text">View detailed information about a specific customer</p>
+                <div class="form-group">
+                    <label for="customer-select">Select Customer ID:</label>
+                    <select id="customer-select" class="form-control">
+                        <option value="">Select a customer...</option>
+                        <option value="C1001">C1001</option>
+                        <option value="C1002">C1002</option>
+                        <option value="C1003">C1003</option>
+                        <option value="C1004">C1004</option>
+                        <option value="C1005">C1005</option>
+                    </select>
+                </div>
+                <button id="get-profile-btn" class="btn btn-primary">Get Profile</button>
+                <div id="customer-profile" class="mt-3" style="display: none;">
+                    <div class="text-center mb-3">
+                        <div class="customer-avatar">
+                            <span id="customer-initial">?</span>
+                        </div>
+                        <h5 id="customer-id">Customer ID</h5>
+                    </div>
+                    <dl class="row customer-details">
+                        <dt class="col-sm-4">Age</dt>
+                        <dd class="col-sm-8" id="customer-age">-</dd>
+                        
+                        <dt class="col-sm-4">Gender</dt>
+                        <dd class="col-sm-8" id="customer-gender">-</dd>
+                        
+                        <dt class="col-sm-4">Location</dt>
+                        <dd class="col-sm-8" id="customer-location">-</dd>
+                        
+                        <dt class="col-sm-4">Segment</dt>
+                        <dd class="col-sm-8" id="customer-segment">-</dd>
+                        
+                        <dt class="col-sm-4">Avg Order Value</dt>
+                        <dd class="col-sm-8" id="customer-aov">-</dd>
+                    </dl>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Browsing History</h6>
+                            <div class="chart-container">
+                                <img src="../static/images/browsing_history.png" alt="Browsing History" id="browsing-history-chart" class="img-fluid">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Purchase History</h6>
+                            <div class="chart-container">
+                                <img src="../static/images/purchase_history.png" alt="Purchase History" id="purchase-history-chart" class="img-fluid">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Purchase Trends</h5>
+                <p class="card-text">Analyze purchase trends across customer segments</p>
+                <button id="purchase-trends-btn" class="btn btn-primary">Analyze Trends</button>
+                <div id="purchase-results" class="mt-3" style="display: none;">
+                    <div class="chart-container mt-3">
+                        <img src="../static/images/purchase_trends.png" alt="Purchase Trends" id="purchase-chart" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Run Segmentation
+    document.getElementById('run-segmentation-btn').addEventListener('click', function() {
+        const button = this;
+        button.disabled = true;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+        
+        // Simulate API call
+        setTimeout(function() {
+            button.disabled = false;
+            button.textContent = 'Run Segmentation';
+            
+            // Show results
+            document.getElementById('segmentation-results').style.display = 'block';
+            
+            // Populate cluster profiles
+            const clusterProfilesDiv = document.getElementById('cluster-profiles');
+            clusterProfilesDiv.innerHTML = `
+                <div class="card-deck">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Cluster 1: High-Value Buyers</h6>
+                            <p class="card-text">Age: 35-45, High AOV, Frequent purchases</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Cluster 2: Casual Browsers</h6>
+                            <p class="card-text">Age: 25-35, Low AOV, High browsing activity</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Cluster 3: New Customers</h6>
+                            <p class="card-text">Age: Various, Few purchases, New accounts</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Cluster 4: Deal Seekers</h6>
+                            <p class="card-text">Age: 30-40, Medium AOV, Seasonal purchases</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }, 1500);
+    });
+    
+    // Get Customer Profile
+    document.getElementById('get-profile-btn').addEventListener('click', function() {
+        const customerId = document.getElementById('customer-select').value;
+        
+        if (!customerId) {
+            showError('Please select a customer ID');
+            return;
+        }
+        
+        const button = this;
+        button.disabled = true;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+        
+        // Simulate API call
+        setTimeout(function() {
+            button.disabled = false;
+            button.textContent = 'Get Profile';
+            
+            // Show profile
+            const customerProfile = document.getElementById('customer-profile');
+            customerProfile.style.display = 'block';
+            
+            // Mock data for demonstration
+            const customerData = {
+                customer_id: customerId,
+                age: 35,
+                gender: 'Female',
+                location: 'New York',
+                customer_segment: 'High-Value Buyer',
+                avg_order_value: 95.75
+            };
+            
+            // Populate customer details
+            document.getElementById('customer-initial').textContent = customerData.customer_id.charAt(1);
+            document.getElementById('customer-id').textContent = customerData.customer_id;
+            document.getElementById('customer-age').textContent = customerData.age;
+            document.getElementById('customer-gender').textContent = customerData.gender;
+            document.getElementById('customer-location').textContent = customerData.location;
+            document.getElementById('customer-segment').textContent = customerData.customer_segment;
+            document.getElementById('customer-aov').textContent = formatCurrency(customerData.avg_order_value);
+        }, 1000);
+    });
+    
+    // Browsing Trends
+    document.getElementById('browse-trends-btn').addEventListener('click', function() {
+        const button = this;
+        button.disabled = true;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Analyzing...';
+        
+        // Simulate API call
+        setTimeout(function() {
+            button.disabled = false;
+            button.textContent = 'Analyze Trends';
+            
+            // Show results
+            document.getElementById('browsing-results').style.display = 'block';
+        }, 1200);
+    });
+    
+    // Purchase Trends
+    document.getElementById('purchase-trends-btn').addEventListener('click', function() {
+        const button = this;
+        button.disabled = true;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Analyzing...';
+        
+        // Simulate API call
+        setTimeout(function() {
+            button.disabled = false;
+            button.textContent = 'Analyze Trends';
+            
+            // Show results
+            document.getElementById('purchase-results').style.display = 'block';
+        }, 1200);
+    });
+});
+</script>
